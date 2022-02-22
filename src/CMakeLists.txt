@@ -71,13 +71,8 @@ target_include_directories(
 		"${SOURCE_DIR}"
 )
 
-add_subdirectory("${ROOT_DIR}/external/CommonLibSSE" CommonLibSSE EXCLUDE_FROM_ALL)
-
-target_link_libraries(
-	"${PROJECT_NAME}"
-	PRIVATE
-		CommonLibSSE::CommonLibSSE
-)
+find_package(CommonLibSSE CONFIG REQUIRED)
+target_link_libraries("${PROJECT_NAME}" PRIVATE CommonLibSSE::CommonLibSSE)
 
 target_precompile_headers(
 	"${PROJECT_NAME}"
