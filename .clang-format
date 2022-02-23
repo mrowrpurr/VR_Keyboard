@@ -1,26 +1,26 @@
 ﻿---
 AccessModifierOffset: -4
-AlignAfterOpenBracket: DontAlign
+# AlignAfterOpenBracket: DontAlign
 AlignConsecutiveAssignments: 'false'
 AlignConsecutiveBitFields: 'false'
 AlignConsecutiveDeclarations: 'false'
-AlignConsecutiveMacros: 'false'
-AlignEscapedNewlines: Left
-AlignOperands: Align
+# AlignConsecutiveMacros: 'false'
+# AlignEscapedNewlines: Left
+# AlignOperands: Align
 AlignTrailingComments: 'true'
-AllowAllArgumentsOnNextLine: 'false'
+# AllowAllArgumentsOnNextLine: 'false'
 AllowAllConstructorInitializersOnNextLine: 'false'
 AllowAllParametersOfDeclarationOnNextLine: 'false'
-AllowShortBlocksOnASingleLine: Empty
+# AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: 'false'
-AllowShortEnumsOnASingleLine: 'true'
+# AllowShortEnumsOnASingleLine: 'true'
 AllowShortFunctionsOnASingleLine: All
-AllowShortIfStatementsOnASingleLine: Never
+# AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: 'true'
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: 'true'
-AlwaysBreakTemplateDeclarations: 'Yes'
+# AlwaysBreakTemplateDeclarations: 'Yes'
 BinPackArguments: 'true'
 BinPackParameters: 'true'
 BitFieldColonSpacing: After
@@ -43,10 +43,10 @@ BraceWrapping:
     SplitEmptyRecord: 'false'
     SplitEmptyNamespace: 'false'
 BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Custom
+# BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: 'false'
 BreakConstructorInitializers: AfterColon
-BreakInheritanceList: AfterColon
+# BreakInheritanceList: AfterColon
 BreakStringLiterals: 'true'
 ColumnLimit: 0
 CompactNamespaces: 'false'
@@ -59,11 +59,11 @@ DerivePointerAlignment: 'false'
 DisableFormat: 'false'
 FixNamespaceComments: 'false'
 IncludeBlocks: Preserve
-IndentCaseBlocks: 'true'
+# IndentCaseBlocks: 'true'
 IndentCaseLabels: 'false'
-IndentExternBlock: Indent
-IndentGotoLabels: 'false'
-IndentPPDirectives: AfterHash
+# IndentExternBlock: Indent
+# IndentGotoLabels: 'false'
+# IndentPPDirectives: AfterHash
 IndentWidth: 4
 IndentWrappedFunctionNames: 'true'
 KeepEmptyLinesAtTheStartOfBlocks: 'false'
@@ -73,7 +73,7 @@ NamespaceIndentation: All
 PointerAlignment: Left
 ReflowComments : 'false'
 SortIncludes: 'true'
-SortUsingDeclarations: 'true'
+# SortUsingDeclarations: 'true'
 SpaceAfterCStyleCast: 'false'
 SpaceAfterLogicalNot: 'false'
 SpaceAfterTemplateKeyword: 'true'
@@ -83,19 +83,19 @@ SpaceBeforeCtorInitializerColon: 'true'
 SpaceBeforeInheritanceColon: 'true'
 SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: 'true'
-SpaceBeforeSquareBrackets: 'false'
-SpaceInEmptyBlock: 'false'
+# SpaceBeforeSquareBrackets: 'false'
+# SpaceInEmptyBlock: 'false'
 SpaceInEmptyParentheses: 'false'
 SpacesBeforeTrailingComments: 2
 SpacesInAngles: 'false'
 SpacesInCStyleCastParentheses: 'false'
-SpacesInConditionalStatement: 'false'
+# SpacesInConditionalStatement: 'false'
 SpacesInContainerLiterals: 'true'
 SpacesInParentheses: 'false'
 SpacesInSquareBrackets: 'false'
-Standard: Latest
+# Standard: Latest
 TabWidth: 4
-UseCRLF: 'true'
-UseTab: AlignWithSpaces
+# UseCRLF: 'true'
+# UseTab: AlignWithSpaces
 
 ...

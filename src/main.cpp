@@ -1,3 +1,5 @@
+#include "Events.h"
+
 namespace
 {
 	void InitializeLog()
@@ -47,6 +49,9 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
+
+	const auto messaging = SKSE::GetMessagingInterface();
+	messaging->RegisterListener(Events::OnInit);
 
 	return true;
 }

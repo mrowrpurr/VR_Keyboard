@@ -1,13 +1,30 @@
-set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
+# Choose your version!
+set(SKYRIM_AE ON)
+set(SKYRIM_SE OFF)
+set(SKYRIM_VR OFF)
 
+# Would you like to output the generated SKSE plugin .dll to a directory?
+set(OUTPUT_DLL ON)
+
+###################################################
+
+set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(SOURCE_DIR "${ROOT_DIR}/src")
+
+# Set Project Source Files
 set(SOURCE_FILES
 	"${SOURCE_DIR}/main.cpp"
 	"${SOURCE_DIR}/PCH.h"
+	"${SOURCE_DIR}/Events.h"
+	"${SOURCE_DIR}/Papyrus.h"
+	"${SOURCE_DIR}/Papyrus/DateTime.h"
+	"${SOURCE_DIR}/Papyrus/FileSystem.h"
+	"${SOURCE_DIR}/Papyrus/Reflection.h"
 )
 
 source_group(TREE "${ROOT_DIR}" FILES ${SOURCE_FILES})
 
+# Setup Plugin.h configuration template
 set(VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/src/Plugin.h")
 configure_file(
 	"${ROOT_DIR}/cmake/Plugin.h.in"
@@ -15,14 +32,15 @@ configure_file(
 	@ONLY
 )
 
+# Setup version.rb configuration template
 source_group("src" FILES "${VERSION_HEADER}")
-
 configure_file(
 	"${ROOT_DIR}/cmake/version.rc.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/version.rc"
 	@ONLY
 )
 
+# Setup SKSE plugin as a library
 add_library(
 	"${PROJECT_NAME}"
 	SHARED
@@ -33,6 +51,7 @@ add_library(
 	"${ROOT_DIR}/.editorconfig"
 )
 
+# Compile with C++20 features
 target_compile_features(
 	"${PROJECT_NAME}"
 	PRIVATE
@@ -71,6 +90,10 @@ target_include_directories(
 		"${SOURCE_DIR}"
 )
 
+###################################################
+# TODO Set this up for AE, SE, and VR
+###################################################
+# Load CommonLibSSE from vcpkg
 find_package(CommonLibSSE CONFIG REQUIRED)
 target_link_libraries("${PROJECT_NAME}" PRIVATE CommonLibSSE::CommonLibSSE)
 
@@ -103,3 +126,52 @@ if("${COPY_OUTPUT}")
 		VERBATIM
 	)
 endif()
+
+if("${OUTPUT_DLL}")
+	if ("${SKYRIM_AE}")
+		if (EXISTS "$ENV{SKYRIM_AE_SKSE_DIR}")
+			message(STATUS "Output SKSE DLL for AE to $ENV{SKYRIM_AE_SKSE_DIR}")
+			add_custom_command(
+				TARGET "${PROJECT_NAME}"
+				POST_BUILD
+				COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:${PROJECT_NAME}>" "$ENV{SKYRIM_AE_SKSE_DIR}/"
+				COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_PDB_FILE:${PROJECT_NAME}>" "$ENV{SKYRIM_AE_SKSE_DIR}/"
+				VERBATIM
+			)
+		else()
+			message(WARNING "Could not output SKSE dll for AE. Output directory not found: $ENV{SKYRIM_AE_SKSE_DIR}")
+		endif()
+	elseif("${SKYRIM_SE}")
+		if (EXISTS "$ENV{SKYRIM_SE_SKSE_DIR}")
+			message(STATUS "Output SKSE DLL for SE to $ENV{SKYRIM_SE_SKSE_DIR}")
+			add_custom_command(
+				TARGET "${PROJECT_NAME}"
+				POST_BUILD
+				COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:${PROJECT_NAME}>" "$ENV{SKYRIM_SE_SKSE_DIR}/"
+				COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_PDB_FILE:${PROJECT_NAME}>" "$ENV{SKYRIM_SE_SKSE_DIR}/"
+				VERBATIM
+			)
+		else()
+			message(WARNING "Could not output SKSE dll for SE. Output directory not found: $ENV{SKYRIM_SE_SKSE_DIR}")
+		endif()
+	elseif("${SKYRIM_VR}")
+		if (EXISTS "$ENV{SKYRIM_VR_SKSE_DIR}")
+			message(STATUS "Output SKSE DLL for VR to $ENV{SKYRIM_VR_SKSE_DIR}")
+			add_custom_command(
+				TARGET "${PROJECT_NAME}"
+				POST_BUILD
+				COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:${PROJECT_NAME}>" "$ENV{SKYRIM_VR_SKSE_DIR}/"
+				COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_PDB_FILE:${PROJECT_NAME}>" "$ENV{SKYRIM_VR_SKSE_DIR}/"
+				VERBATIM
+			)
+		else()
+			message(WARNING "Could not output SKSE dll for VR. Output directory not found: $ENV{SKYRIM_VR_SKSE_DIR}")
+		endif()
+	endif()
+endif()
+
+# Unset configuration variables (or they may be cached)
+unset(SKYRIM_AE)
+unset(SKYRIM_SE)
+unset(SKYRIM_VR)
+unset(OUTPUT_DLL)
