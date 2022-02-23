@@ -1,15 +1,12 @@
 #pragma once
 
 #pragma warning(push)
+
 #include <RE/Skyrim.h>
 #include <REL/Relocation.h>
 #include <SKSE/SKSE.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
-#ifdef NDEBUG
-#	include <spdlog/sinks/basic_file_sink.h>
-#else
-#	include <spdlog/sinks/msvc_sink.h>
-#endif
 #pragma warning(pop)
 
 using namespace std::literals;
