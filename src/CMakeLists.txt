@@ -15,6 +15,7 @@ set(SOURCE_DIR "${ROOT_DIR}/src")
 set(SOURCE_FILES
 	"${SOURCE_DIR}/main.cpp"
 	"${SOURCE_DIR}/PCH.h"
+	"${SOURCE_DIR}/Ini.h"
 	"${SOURCE_DIR}/Events.h"
 	"${SOURCE_DIR}/Papyrus.h"
 	"${SOURCE_DIR}/Papyrus/DateTime.h"
