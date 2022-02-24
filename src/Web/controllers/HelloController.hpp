@@ -18,16 +18,30 @@ public:
 public:
   
   ENDPOINT("GET", "/", root) {
-    auto response = TestDto::createShared();
     auto now = std::chrono::system_clock::now();
-    response->text = std::format(
-      "Hi Skyrim, I am C++. The time is currently {}", now
-    );
-    return createDtoResponse(Status::CODE_200, response);
+    return response(std::format("Hi Skyrim, I am C++. The time is currently {}", now));
   }
   
-  // TODO Insert Your endpoints here !!!
+  ENDPOINT("GET", "/spells/{spellName}", searchSpells, PATH(String, spellName)) {
+    const auto nameQuery = spellName->data();
+    const auto dataHandler = RE::TESDataHandler::GetSingleton();
+    const auto& spells = dataHandler->GetFormArray<RE::SpellItem>();
+    int found = 0;
+
+    for (const auto& spell : spells) {
+      std::string name(spell->GetName());
+      if (name.find(nameQuery) != std::string::npos)
+        found++;
+    }
+
+    return response(std::format("Found {} spells", found)); // 
+  }
   
+  std::shared_ptr<oatpp::web::protocol::http::outgoing::Response> response(std::string text) {
+    auto response = TestDto::createShared();
+    response->text = text;
+    return createDtoResponse(Status::CODE_200, response);
+  }
 };
 
 #include OATPP_CODEGEN_END(ApiController) 
