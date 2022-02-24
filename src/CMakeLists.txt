@@ -15,12 +15,20 @@ set(SOURCE_DIR "${ROOT_DIR}/src")
 set(SOURCE_FILES
 	"${SOURCE_DIR}/main.cpp"
 	"${SOURCE_DIR}/PCH.h"
-	"${SOURCE_DIR}/Ini.h"
+
 	"${SOURCE_DIR}/Events.h"
+
 	"${SOURCE_DIR}/Papyrus.h"
+	"${SOURCE_DIR}/Papyrus/Ini.h"
 	"${SOURCE_DIR}/Papyrus/DateTime.h"
 	"${SOURCE_DIR}/Papyrus/FileSystem.h"
 	"${SOURCE_DIR}/Papyrus/Reflection.h"
+
+	"${SOURCE_DIR}/Web.h"
+	"${SOURCE_DIR}/Web/AppComponent.hpp"
+	"${SOURCE_DIR}/Web/controllers/HelloController.cpp"
+	"${SOURCE_DIR}/Web/controllers/HelloController.hpp"
+	"${SOURCE_DIR}/Web/dtos/TestDto.hpp"
 )
 
 source_group(TREE "${ROOT_DIR}" FILES ${SOURCE_FILES})
@@ -56,7 +64,7 @@ add_library(
 target_compile_features(
 	"${PROJECT_NAME}"
 	PRIVATE
-		cxx_std_20
+		cxx_std_23
 )
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
@@ -90,6 +98,10 @@ target_include_directories(
 		"${CMAKE_CURRENT_BINARY_DIR}/src"
 		"${SOURCE_DIR}"
 )
+
+# Web framework: Oatpp
+find_package(oatpp 1.3.0 REQUIRED)
+target_link_libraries("${PROJECT_NAME}" PRIVATE PUBLIC oatpp::oatpp)
 
 ###################################################
 # TODO Set this up for AE, SE, and VR
