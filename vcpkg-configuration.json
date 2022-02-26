@@ -3,9 +3,11 @@
     {
       "kind": "git",
       "repository": "https://github.com/mrowrpurr/vcpkg-repo",
-      "baseline": "27217cf39c9288a8c2567f972b1c412ac93fc381",
+      "baseline": "a30c657139f930e755be68bffe32c9ba3045432b",
       "packages": [
-        "commonlibsse"
+        "commonlibsse",
+        "commonlibvr",
+        "sksevr"
       ]
     }
   ]

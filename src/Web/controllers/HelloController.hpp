@@ -3,6 +3,8 @@
 #include <iostream>
 #include <format>
 
+// #include "skse64/GameVR.h"
+
 #include "Web/dtos/TestDto.hpp"
 
 #include "oatpp/web/server/api/ApiController.hpp"
@@ -19,7 +21,14 @@ public:
   
   ENDPOINT("GET", "/", root) {
     auto now = std::chrono::system_clock::now();
-    return response(std::format("Hi Skyrim, I am C++. The time is currently {}", now));
+
+    
+
+    #ifdef FOO
+      return response(std::format("FOO! Hi Skyrim, I am C++. I will run in VR shortly! The time is currently {}", now));
+    #else
+      return response(std::format("Not Foo! Hi Skyrim, I am C++. I will run in VR shortly! The time is currently {}", now));
+    #endif
   }
   
   ENDPOINT("GET", "/spells/{spellName}", searchSpells, PATH(String, spellName)) {

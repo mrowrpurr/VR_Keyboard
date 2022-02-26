@@ -1,10 +1,13 @@
 # Choose your version!
-set(SKYRIM_AE ON)
+set(SKYRIM_AE OFF)
 set(SKYRIM_SE OFF)
-set(SKYRIM_VR OFF)
+set(SKYRIM_VR ON)
 
 # Would you like to output the generated SKSE plugin .dll to a directory?
 set(OUTPUT_DLL ON)
+
+# TESTING
+set(FOO OFF)
 
 ###################################################
 
@@ -79,6 +82,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 			"/Zc:preprocessor"	# Enable preprocessor conformance mode
 
 			"/wd4200" # nonstandard extension used : zero-sized array in struct/union
+			"/wd4996" # TODO - remove this - it's needed for CommonLibVR's CSVParser (add to #pragma there!)
 
 			"$<$<CONFIG:DEBUG>:>"
 			"$<$<CONFIG:RELEASE>:/Zc:inline;/JMC-;/Ob3>"
@@ -103,12 +107,20 @@ target_include_directories(
 find_package(oatpp 1.3.0 REQUIRED)
 target_link_libraries("${PROJECT_NAME}" PRIVATE PUBLIC oatpp::oatpp)
 
+# Valve OpenVR
+find_package(OpenVR REQUIRED)
+target_link_libraries("${PROJECT_NAME}" PRIVATE PUBLIC OpenVR::OpenVR)
+
 ###################################################
 # TODO Set this up for AE, SE, and VR
 ###################################################
-# Load CommonLibSSE from vcpkg
-find_package(CommonLibSSE CONFIG REQUIRED)
-target_link_libraries("${PROJECT_NAME}" PRIVATE CommonLibSSE::CommonLibSSE)
+# Load CommonLibVR from vcpkg
+find_package(CommonLibVR CONFIG REQUIRED)
+target_link_libraries("${PROJECT_NAME}" PRIVATE CommonLibVR::CommonLibVR)
+
+if("${FOO}")
+	target_compile_definitions("${PROJECT_NAME}" PUBLIC FOO)
+endif()
 
 target_precompile_headers(
 	"${PROJECT_NAME}"
