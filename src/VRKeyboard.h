@@ -17,6 +17,9 @@ namespace VRKeyboard {
         // Polling wait time for keyboard events when keyboard is open
         const DWORD keyboardEventPollingWaitIntervalMs = 50;
 
+        // Maximum characters that can be entered into keyboard
+        const uint32_t maxCharacters = 1024;
+
         // Unique key for the Open VR overlay used to show the VR keyboard
         const std::string_view overlayKey = "MP_SkyrimVRKeyboard"sv;
 
@@ -89,7 +92,9 @@ namespace VRKeyboard {
 
     namespace {
         // Function run in a thread to open keyboard and listen for keyboard events.
-        void OpenKeyboardAndListenForKeyboardEvents(std::function<void (std::string_view)> callback, std::string_view startingText, InputSize inputSize, InputMode inputMode, uint32_t maxCharacters, bool) {
+        void OpenKeyboardAndListenForKeyboardEvents(std::function<void (std::string)> callback, std::string_view startingText, InputSize inputSize, InputMode inputMode, bool) {
+            logger::info("OpenKeyboardAndListenForKeyboardEvents()");
+
             const auto vrInputSize = GetOpenVrInputSize(inputSize);
             const auto vrInputMode = GetOpenVrInputMode(inputMode);
             const uint64_t userValue = 0; // <-- Still haven't figured out what this value is...
@@ -102,7 +107,7 @@ namespace VRKeyboard {
             }
 
             vr::VREvent_t event;
-            auto text = std::string_view();
+            std::string text;
 
             // TODO add support for handling individual chars while typing :)
             // vr::VREvent_KeyboardCharInput
@@ -112,9 +117,9 @@ namespace VRKeyboard {
             while (true) {
                 if (vrContext.VROverlay()->PollNextOverlayEvent(overlayHandle, &event, sizeof(vr::VREvent_t))) {
                     if (event.eventType == vr::VREvent_KeyboardClosed || event.eventType == vr::VREvent_KeyboardDone) {
-                        auto buffer = new char[maxCharacters];
+                        char buffer[maxCharacters + 1] = "\0"; // + 1 for the terminating character
                         vrContext.VROverlay()->GetKeyboardText(buffer, maxCharacters);
-                        text = std::string_view(buffer);
+                        text = std::string(buffer);
                         break;
                     }
                 } else {
@@ -122,6 +127,7 @@ namespace VRKeyboard {
                 }
             }
 
+            logger::info("Invoking callback");
             callback(text);
 
             Close();
@@ -129,7 +135,9 @@ namespace VRKeyboard {
     }
 
     // Open the keyboard and perform the provided function when keyboard entry is done.
-    bool Open(std::function<void (std::string_view)> callback, std::string_view startingText = ""sv ,InputSize inputSize = InputSize::SingleLine, InputMode inputMode = InputMode::Normal, uint32_t maxCharacters = 0, bool sendKeystrokes = false) {
+    bool Open(std::function<void (std::string)> callback, std::string_view startingText = ""sv ,InputSize inputSize = InputSize::SingleLine, InputMode inputMode = InputMode::Normal, bool sendKeystrokes = false) {
+        logger::info("Open() VR Keyboard");
+
         bool wasOpen = isOpen.exchange(true);
         if (wasOpen) {
             logger::debug("VRKeyboard.Open() called but VR keyboard was already open."sv);
@@ -149,7 +157,7 @@ namespace VRKeyboard {
 
         Sleep(overlayWaitMsBeforeActivatingKeyboard);
         
-        keyboardThread = new std::thread(OpenKeyboardAndListenForKeyboardEvents, callback, startingText, inputSize, inputMode, maxCharacters, sendKeystrokes);
+        keyboardThread = new std::thread(OpenKeyboardAndListenForKeyboardEvents, callback, startingText, inputSize, inputMode, sendKeystrokes);
 
         return true;
     };
