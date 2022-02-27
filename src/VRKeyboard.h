@@ -1,8 +1,9 @@
 #include <atomic>
 #include <thread>
 #include <windows.h>
-
 #include <openvr.h>
+
+// TODO - Separate into VRKeyboard.cpp
 
 namespace VRKeyboard {
 
@@ -92,7 +93,7 @@ namespace VRKeyboard {
 
     namespace {
         // Function run in a thread to open keyboard and listen for keyboard events.
-        void OpenKeyboardAndListenForKeyboardEvents(std::function<void (std::string)> callback, std::string_view startingText, InputSize inputSize, InputMode inputMode, bool) {
+        void OpenKeyboardThread(std::string_view startingText, InputSize inputSize, InputMode inputMode, bool) {
             logger::info("OpenKeyboardAndListenForKeyboardEvents()");
 
             const auto vrInputSize = GetOpenVrInputSize(inputSize);
@@ -102,40 +103,15 @@ namespace VRKeyboard {
 
             const auto error = vrContext.VROverlay()->ShowKeyboardForOverlay(overlayHandle, vrInputMode, vrInputSize, 0, description, maxCharacters, startingText.data(), userValue);
             if (error != vr::EVROverlayError::VROverlayError_None) {
-                Close();
+                Close(); // For cleanup
                 return;
             }
-
-            vr::VREvent_t event;
-            std::string text;
-
-            // TODO add support for handling individual chars while typing :)
-            // vr::VREvent_KeyboardCharInput
-
-            // TODO when in Submit mode, does Closed get called or Done or both?
-
-            while (true) {
-                if (vrContext.VROverlay()->PollNextOverlayEvent(overlayHandle, &event, sizeof(vr::VREvent_t))) {
-                    if (event.eventType == vr::VREvent_KeyboardClosed || event.eventType == vr::VREvent_KeyboardDone) {
-                        char buffer[maxCharacters + 1] = "\0"; // + 1 for the terminating character
-                        vrContext.VROverlay()->GetKeyboardText(buffer, maxCharacters);
-                        text = std::string(buffer);
-                        break;
-                    }
-                } else {
-                    Sleep(keyboardEventPollingWaitIntervalMs);
-                }
-            }
-
-            logger::info("Invoking callback");
-            callback(text);
-
-            Close();
         }
     }
 
     // Open the keyboard and perform the provided function when keyboard entry is done.
-    bool Open(std::function<void (std::string)> callback, std::string_view startingText = ""sv ,InputSize inputSize = InputSize::SingleLine, InputMode inputMode = InputMode::Normal, bool sendKeystrokes = false) {
+    // bool Open(std::function<void (std::string)> callback, std::string_view startingText = ""sv ,InputSize inputSize = InputSize::SingleLine, InputMode inputMode = InputMode::Normal, bool sendKeystrokes = false) {
+    bool Open(std::string_view startingText = ""sv ,InputSize inputSize = InputSize::SingleLine, InputMode inputMode = InputMode::Normal, bool sendKeystrokes = false) {
         logger::info("Open() VR Keyboard");
 
         bool wasOpen = isOpen.exchange(true);
@@ -157,8 +133,30 @@ namespace VRKeyboard {
 
         Sleep(overlayWaitMsBeforeActivatingKeyboard);
         
-        keyboardThread = new std::thread(OpenKeyboardAndListenForKeyboardEvents, callback, startingText, inputSize, inputMode, sendKeystrokes);
+        keyboardThread = new std::thread(OpenKeyboardThread, startingText, inputSize, inputMode, sendKeystrokes);
 
         return true;
+    };
+
+    std::string PollForCompletedKeyboardText() {
+        logger::info("Poll for VR Keyboard completed");
+        if (! isOpen) return "";
+
+        vr::VREvent_t event;
+        std::string text;
+
+        while (vrContext.VROverlay()->PollNextOverlayEvent(overlayHandle, &event, sizeof(vr::VREvent_t))) {
+            if (event.eventType == vr::VREvent_KeyboardClosed || event.eventType == vr::VREvent_KeyboardDone) {
+                char buffer[maxCharacters + 1] = "\0"; // + 1 for the terminating character
+                vrContext.VROverlay()->GetKeyboardText(buffer, maxCharacters);
+                text = std::string(buffer);
+                logger::info("Got completed text from keyboard {} / Gonna return!", text);
+                Close();
+                logger::info("Returning!");
+                return text;
+            }
+        }
+
+        return "";
     };
 }

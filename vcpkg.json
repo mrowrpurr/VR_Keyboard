@@ -1,9 +1,8 @@
 {
-  "name": "my-first-skse-plugin",
-  "version": "1.2.3",
+  "name": "vr-keyboard-papyrus",
+  "version": "1.0.0",
   "dependencies": [
     "commonlibvr",
-    "openvr",
-    "oatpp"
+    "openvr"
   ]
 }

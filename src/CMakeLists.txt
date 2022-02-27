@@ -18,23 +18,8 @@ set(SOURCE_DIR "${ROOT_DIR}/src")
 set(SOURCE_FILES
 	"${SOURCE_DIR}/main.cpp"
 	"${SOURCE_DIR}/PCH.h"
-
-	"${SOURCE_DIR}/Events.h"
-
 	"${SOURCE_DIR}/VRKeyboard.h"
 	"${SOURCE_DIR}/VRKeyboardPapyrus.h"
-
-	"${SOURCE_DIR}/Papyrus.h"
-	"${SOURCE_DIR}/Papyrus/Ini.h"
-	"${SOURCE_DIR}/Papyrus/DateTime.h"
-	"${SOURCE_DIR}/Papyrus/FileSystem.h"
-	"${SOURCE_DIR}/Papyrus/Reflection.h"
-
-	"${SOURCE_DIR}/Web.h"
-	"${SOURCE_DIR}/Web/AppComponent.hpp"
-	"${SOURCE_DIR}/Web/controllers/HelloController.cpp"
-	"${SOURCE_DIR}/Web/controllers/HelloController.hpp"
-	"${SOURCE_DIR}/Web/dtos/TestDto.hpp"
 )
 
 source_group(TREE "${ROOT_DIR}" FILES ${SOURCE_FILES})
@@ -106,18 +91,11 @@ target_include_directories(
 		"${SOURCE_DIR}"
 )
 
-# Web framework: Oatpp
-find_package(oatpp 1.3.0 REQUIRED)
-target_link_libraries("${PROJECT_NAME}" PRIVATE PUBLIC oatpp::oatpp)
-
 # Valve OpenVR
 find_package(OpenVR REQUIRED)
 target_link_libraries("${PROJECT_NAME}" PRIVATE PUBLIC OpenVR::OpenVR)
 
-###################################################
-# TODO Set this up for AE, SE, and VR
-###################################################
-# Load CommonLibVR from vcpkg
+# CommonLibVR
 find_package(CommonLibVR CONFIG REQUIRED)
 target_link_libraries("${PROJECT_NAME}" PRIVATE CommonLibVR::CommonLibVR)
 

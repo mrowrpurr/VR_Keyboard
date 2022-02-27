@@ -8,7 +8,7 @@ set(VCPKG_TARGET_TRIPLET "x64-windows-skse")
 # These become available via Plugin.h
 project(
 	VRKeyboard
-	VERSION 0.420.69
+	VERSION 1.0.0
 	LANGUAGES CXX
 )
 

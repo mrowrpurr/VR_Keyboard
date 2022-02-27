@@ -1,6 +1,3 @@
-#include <openvr.h>
-
-#include "Events.h"
 #include "VRKeyboardPapyrus.h"
 
 namespace {
@@ -22,42 +19,20 @@ namespace {
 		spdlog::set_default_logger(std::move(log));
 		spdlog::set_pattern("%g(%#): [%^%l%$] %v"s);
 	}
-
-	void Setup() {
-		// TODO remove:
-		const auto messaging = SKSE::GetMessagingInterface();
-		messaging->RegisterListener(Events::OnInit);
-
-		const auto papyrus = SKSE::GetPapyrusInterface();
-		papyrus->Register(VRKeyboard::Papyrus::BIND);
-	}
 }
 
-extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
-	SKSE::PluginVersionData v;
-
-	v.PluginVersion(Plugin::VERSION);
-	v.PluginName(Plugin::NAME);
-
-	v.UsesAddressLibrary(true);
-	v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
-
-	return v;
-}();
-
-// Called in all editions
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse) {
 	InitializeLog();
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
 
-	Setup();
+	const auto papyrus = SKSE::GetPapyrusInterface();
+	papyrus->Register(VRKeyboard::Papyrus::BIND);
 
 	return true;
 }
 
-// For Skyrim Special Edition and SkyrimVR
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, SKSE::PluginInfo* a_info) {
 	InitializeLog();
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());

@@ -13,8 +13,7 @@ using namespace std::literals;
 
 namespace logger = SKSE::log;
 
-namespace util
-{
+namespace util {
 	using SKSE::stl::report_and_fail;
 }
 
