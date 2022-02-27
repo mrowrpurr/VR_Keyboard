@@ -7,8 +7,8 @@
 
 namespace VRKeyboard {
 
-    enum InputSize { SingleLine, MultiLine };
-    enum InputMode { Normal, Password, KeepOpen };
+    enum InputSize { SingleLine = 0, MultiLine = 1 };
+    enum InputMode { Normal = 0, Password = 1, KeepOpen = 2 };
 
     namespace {
         // Help prevent keyboard from auto-closing quickly
@@ -94,10 +94,12 @@ namespace VRKeyboard {
     namespace {
         // Function run in a thread to open keyboard and listen for keyboard events.
         void OpenKeyboardThread(std::string_view startingText, InputSize inputSize, InputMode inputMode, bool) {
-            logger::info("OpenKeyboardAndListenForKeyboardEvents()");
+            logger::info("OpenKeyboardAndListenForKeyboardEvents() with starting text {}", startingText);
 
             const auto vrInputSize = GetOpenVrInputSize(inputSize);
+            logger::info("VR Input Size selected: {}", vrInputSize);
             const auto vrInputMode = GetOpenVrInputMode(inputMode);
+            logger::info("VR Input Mode selected: {}", vrInputMode);
             const uint64_t userValue = 0; // <-- Still haven't figured out what this value is...
             const char* description = {}; //<-- Still haven't figured out what this value is...
 
@@ -112,7 +114,7 @@ namespace VRKeyboard {
     // Open the keyboard and perform the provided function when keyboard entry is done.
     // bool Open(std::function<void (std::string)> callback, std::string_view startingText = ""sv ,InputSize inputSize = InputSize::SingleLine, InputMode inputMode = InputMode::Normal, bool sendKeystrokes = false) {
     bool Open(std::string_view startingText = ""sv ,InputSize inputSize = InputSize::SingleLine, InputMode inputMode = InputMode::Normal, bool sendKeystrokes = false) {
-        logger::info("Open() VR Keyboard");
+        logger::info("Open() VR Keyboard with starting text {}", startingText);
 
         bool wasOpen = isOpen.exchange(true);
         if (wasOpen) {
