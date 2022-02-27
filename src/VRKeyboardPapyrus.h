@@ -1,3 +1,5 @@
+#include "VRKeyboard.h"
+
 namespace VRKeyboard {
     namespace Papyrus {
 
@@ -11,7 +13,16 @@ namespace VRKeyboard {
                 void SetObject(const RE::BSTSmartPointer<RE::BSScript::Object>&) {}
         };
 
+        // void OpenKeyboard(StaticFunctionTag*) {
+
+        // }
+
         void GetInput(RE::BSScript::IVirtualMachine*, RE::VMStackID stackId, StaticFunctionTag*, std::string callbackFn) {
+
+            // VRKeyboard::
+
+
+
             auto* vm = RE::BSScript::Internal::VirtualMachine::GetSingleton();
 
             RE::BSSpinLockGuard lock(vm->runningStacksLock);
@@ -22,7 +33,6 @@ namespace VRKeyboard {
             auto variable = stack->top->previousFrame->self;
 
             #undef GetObject
-
             const auto& object = variable.GetObject();
             const auto className = object->GetTypeInfo()->GetName();
             const auto handle = object->GetHandle();
