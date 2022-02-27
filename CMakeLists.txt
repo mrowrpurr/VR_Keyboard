@@ -7,7 +7,7 @@ set(VCPKG_TARGET_TRIPLET "x64-windows-skse")
 # Your SKSE plugin name and version
 # These become available via Plugin.h
 project(
-	MyFirstVR
+	VRKeyboard
 	VERSION 0.420.69
 	LANGUAGES CXX
 )
