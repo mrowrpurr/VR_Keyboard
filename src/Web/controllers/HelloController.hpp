@@ -22,12 +22,18 @@ public:
   ENDPOINT("GET", "/", root) {
     auto now = std::chrono::system_clock::now();
 
+
+	// namespace vr = vr_1_0_12;
+
+    // auto vrContext = vr::COpenVRContext();
+    // vr::VROverlayHandle_t keyboardOverlayHandle = 0;
+    // std::thread* keyboardHandlerThread = nullptr;
     
 
     #ifdef FOO
       return response(std::format("FOO! Hi Skyrim, I am C++. I will run in VR shortly! The time is currently {}", now));
     #else
-      return response(std::format("Not Foo! Hi Skyrim, I am C++. I will run in VR shortly! The time is currently {}", now));
+      return response(std::format("Welcome to this mod. We will make the VR keyboard work now! The time is currently {}", now));
     #endif
   }
   

@@ -3,12 +3,6 @@
 
 namespace {
 
-	// namespace vr = vr_1_0_12;
-
-    // auto vrContext = vr::COpenVRContext();
-    // vr::VROverlayHandle_t keyboardOverlayHandle = 0;
-    // std::thread* keyboardHandlerThread = nullptr;
-
 	void InitializeLog() {
 
 		// vr::COpenVRContext();
