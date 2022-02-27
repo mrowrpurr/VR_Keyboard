@@ -1,12 +1,11 @@
-#include "Events.h"
 #include <openvr.h>
+
+#include "Events.h"
+#include "VRKeyboardPapyrus.h"
 
 namespace {
 
 	void InitializeLog() {
-
-		// vr::COpenVRContext();
-
 		auto path = logger::log_directory();
 		if (!path) {
 			util::report_and_fail("Failed to find standard logging directory"sv);
@@ -25,8 +24,12 @@ namespace {
 	}
 
 	void Setup() {
+		// TODO remove:
 		const auto messaging = SKSE::GetMessagingInterface();
 		messaging->RegisterListener(Events::OnInit);
+
+		const auto papyrus = SKSE::GetPapyrusInterface();
+		papyrus->Register(VRKeyboard::Papyrus::BIND);
 	}
 }
 
@@ -55,20 +58,13 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 }
 
 // For Skyrim Special Edition and SkyrimVR
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info) {
+extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, SKSE::PluginInfo* a_info) {
 	InitializeLog();
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
 	a_info->infoVersion = SKSE::PluginInfo::kVersion;
 	a_info->name = Plugin::NAME.data();
-	a_info->version = 1;  // Plugin::VERSION.pack();
-
-	
-
-	// a_info->name = Plugin::NAME.data();
-	// a_info->infoVersion = SKSE::PluginInfo::kVersion;
-	// // a_info->infoVersion = Plugin::VERSION.pack();
-	// a_info->version = Plugin::VERSION.pack();
+	a_info->version = Plugin::VERSION.pack();
 
 	return true;
 }

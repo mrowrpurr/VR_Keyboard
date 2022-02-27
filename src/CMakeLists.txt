@@ -21,6 +21,9 @@ set(SOURCE_FILES
 
 	"${SOURCE_DIR}/Events.h"
 
+	"${SOURCE_DIR}/VRKeyboard.h"
+	"${SOURCE_DIR}/VRKeyboardPapyrus.h"
+
 	"${SOURCE_DIR}/Papyrus.h"
 	"${SOURCE_DIR}/Papyrus/Ini.h"
 	"${SOURCE_DIR}/Papyrus/DateTime.h"

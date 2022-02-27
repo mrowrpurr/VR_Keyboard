@@ -24,27 +24,37 @@ public:
 
   void ListenToVrKeyboard() {
     vr::EVROverlayError err;
-    err = vrContext.VROverlay()->ShowKeyboardForOverlay(keyboardOverlayHandle, vr::k_EGamepadTextInputModeNormal, vr::k_EGamepadTextInputLineModeSingleLine, 0, "The Description", 0, "Existing text", 0);
+    err = vrContext.VROverlay()->ShowKeyboardForOverlay(keyboardOverlayHandle, vr::k_EGamepadTextInputModeNormal, vr::k_EGamepadTextInputLineModeSingleLine, 0, "", 128, "", 0);
     if (err != vr::EVROverlayError::VROverlayError_None) {
       return;
     }
     Sleep(100);
 
     vr::VREvent_t event;
+    std::string text;
 
     while (true) {
       if (vrContext.VROverlay()->PollNextOverlayEvent(keyboardOverlayHandle, &event, sizeof(vr::VREvent_t))) {
         if (event.eventType == vr::VREvent_KeyboardClosed || event.eventType == vr::VREvent_KeyboardDone) {
           char buffer[128 + 1] = "\0";
           vrContext.VROverlay()->GetKeyboardText(buffer, 128);
-          auto text = std::string(buffer);
-          auto output = std::format("Keyboard text entered: '{}'", text);
-          auto* consoleLog = RE::ConsoleLog::GetSingleton();
-          consoleLog->Print(output.c_str());
+          text = std::string(buffer);
+          break;
         }
+      } else {
+        Sleep(50);
       }
-      Sleep(50);
     }
+
+    keyboardHandlerThread->detach();
+    delete keyboardHandlerThread;
+    keyboardHandlerThread = nullptr;
+    vrContext.VROverlay()->DestroyOverlay(keyboardOverlayHandle);
+    keyboardOverlayHandle = 0;
+
+    auto output = std::format("Keyboard text entered: '{}'", text);
+    auto* consoleLog = RE::ConsoleLog::GetSingleton();
+    consoleLog->Print(output.c_str());
   }
 
   ENDPOINT("GET", "/", root) {
