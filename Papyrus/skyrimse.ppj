@@ -1,0 +1,23 @@
+<?xml version='1.0'?>
+<PapyrusProject xmlns="PapyrusProject.xsd" 
+    Flags="TESV_Papyrus_Flags.flg" 
+    Game="sse"
+    Output="Scripts" 
+    Anonymize="false"
+    Optimize="false" 
+    Release="false" 
+    Zip="true"
+    Package="false"
+    Final="false">
+    <Variables>
+        <Variable Name="ModName" Value="VRKeyboard" />
+    </Variables>
+    <Imports>
+        <Import>C:\Users\mrowr\Dropbox\Skyrim\Papyrus Imports\SKSE</Import>
+        <Import>C:\Users\mrowr\Dropbox\Skyrim\Papyrus Imports\UIExtensions</Import>
+        <Import>C:\Program Files (x86)\Steam\steamapps\common\SkyrimVR with Creation Kit\Data\Scripts\Source</Import>
+    </Imports>
+    <Folders>
+        <Folder>./Scripts/Source</Folder>
+    </Folders>
+</PapyrusProject>

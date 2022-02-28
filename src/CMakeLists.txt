@@ -6,9 +6,6 @@ set(SKYRIM_VR ON)
 # Would you like to output the generated SKSE plugin .dll to a directory?
 set(OUTPUT_DLL ON)
 
-# TESTING
-set(FOO OFF)
-
 ###################################################
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
@@ -99,10 +96,6 @@ target_link_libraries("${PROJECT_NAME}" PRIVATE PUBLIC OpenVR::OpenVR)
 find_package(CommonLibVR CONFIG REQUIRED)
 target_link_libraries("${PROJECT_NAME}" PRIVATE CommonLibVR::CommonLibVR)
 
-if("${FOO}")
-	target_compile_definitions("${PROJECT_NAME}" PUBLIC FOO)
-endif()
-
 target_precompile_headers(
 	"${PROJECT_NAME}"
 	PRIVATE
@@ -111,27 +104,10 @@ target_precompile_headers(
 
 install(
 	FILES
-		"$<TARGET_FILE:${PROJECT_NAME}>"
-	DESTINATION "SKSE/Plugins"
-	COMPONENT "main"
-)
-
-install(
-	FILES
 		"$<TARGET_PDB_FILE:${PROJECT_NAME}>"
 	DESTINATION "/"
 	COMPONENT "pdbs"
 )
-
-if("${COPY_OUTPUT}")
-	add_custom_command(
-		TARGET "${PROJECT_NAME}"
-		POST_BUILD
-		COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:${PROJECT_NAME}>" "${Skyrim64Path}/Data/SKSE/Plugins/"
-		COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_PDB_FILE:${PROJECT_NAME}>" "${Skyrim64Path}/Data/SKSE/Plugins/"
-		VERBATIM
-	)
-endif()
 
 if("${OUTPUT_DLL}")
 	if ("${SKYRIM_AE}")
