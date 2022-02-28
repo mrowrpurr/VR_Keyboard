@@ -27,6 +27,12 @@ namespace VRKeyboard {
         // Friendly name for the Open VR overlay used to show the VR keyboard
         const std::string_view overlayName = "Skyrim VR Keyboard"sv;
 
+        // Use normal input mode. Alternative modes include password entry and submit-style (for chat).
+        const vr::EGamepadTextInputMode keyboardInputMode_Normal = vr::k_EGamepadTextInputModeNormal;
+
+        // Use single-line input. Note: I wasn't able to get multi-line input working.
+        const vr::EGamepadTextInputLineMode keyboardTextInput_SingleLine = vr::k_EGamepadTextInputLineModeSingleLine;
+
         // Track whether the VR keyboard is already open (or in the process of being opened)
         std::atomic<bool> isOpen(false);
 
@@ -41,43 +47,12 @@ namespace VRKeyboard {
 
         // Pointer of currently operating thread watching the keyboard (or nullptr)
         std::thread* keyboardThread = nullptr;
-
-        // Small conversion from VRKeyboard enum to Open VR's value
-        inline vr::EGamepadTextInputLineMode GetOpenVrInputSize(InputSize inputSize) {
-            switch (inputSize) {
-                case InputSize::SingleLine:
-                    return vr::k_EGamepadTextInputLineModeSingleLine;
-                    break;
-                case InputSize::MultiLine:
-                    return vr::k_EGamepadTextInputLineModeMultipleLines;
-                    break;
-                default:
-                    return vr::k_EGamepadTextInputLineModeSingleLine;
-            }
-        }
-
-        // Small conversion from VRKeyboard enum to Open VR's value
-        // Details on Submit mode: https://chromium.googlesource.com/external/github.com/ValveSoftware/openvr/+/c95571027b79644643bca044538144c96194c4f2
-        inline vr::EGamepadTextInputMode GetOpenVrInputMode(InputMode inputMode) {
-            switch (inputMode) {
-                case InputMode::Normal:
-                    return vr::k_EGamepadTextInputModeNormal;
-                    break;
-                case InputMode::Password:
-                    return vr::k_EGamepadTextInputModePassword;
-                    break;
-                case InputMode::KeepOpen:
-                    return vr::k_EGamepadTextInputModeSubmit;
-                    break;
-                default:
-                    return vr::k_EGamepadTextInputModeNormal;
-            }
-        }
     }
 
     // Closes the currently open overlay (if any) and cleans up.
     // Automatically called when the keyboard is closed.
     void Close() {
+
         if (isOpen) {
             keyboardThread->detach(); // <-- Should we .join() or .detach() ?
             delete keyboardThread;    // <-- Necessary to cleanup ?
@@ -93,17 +68,11 @@ namespace VRKeyboard {
 
     namespace {
         // Function run in a thread to open keyboard and listen for keyboard events.
-        void OpenKeyboardThread(std::string_view startingText, InputSize inputSize, InputMode inputMode, bool) {
-            logger::info("OpenKeyboardAndListenForKeyboardEvents() with starting text {}", startingText);
-
-            const auto vrInputSize = GetOpenVrInputSize(inputSize);
-            logger::info("VR Input Size selected: {}", vrInputSize);
-            const auto vrInputMode = GetOpenVrInputMode(inputMode);
-            logger::info("VR Input Mode selected: {}", vrInputMode);
+        void OpenKeyboardThread(std::string_view startingText) {
             const uint64_t userValue = 0; // <-- Still haven't figured out what this value is...
             const char* description = {}; //<-- Still haven't figured out what this value is...
 
-            const auto error = vrContext.VROverlay()->ShowKeyboardForOverlay(overlayHandle, vrInputMode, vrInputSize, 0, description, maxCharacters, startingText.data(), userValue);
+            const auto error = vrContext.VROverlay()->ShowKeyboardForOverlay(overlayHandle, keyboardInputMode_Normal, keyboardTextInput_SingleLine, 0, description, maxCharacters, startingText.data(), userValue);
             if (error != vr::EVROverlayError::VROverlayError_None) {
                 Close(); // For cleanup
                 return;
@@ -113,7 +82,7 @@ namespace VRKeyboard {
 
     // Open the keyboard and perform the provided function when keyboard entry is done.
     // bool Open(std::function<void (std::string)> callback, std::string_view startingText = ""sv ,InputSize inputSize = InputSize::SingleLine, InputMode inputMode = InputMode::Normal, bool sendKeystrokes = false) {
-    bool Open(std::string_view startingText = ""sv ,InputSize inputSize = InputSize::SingleLine, InputMode inputMode = InputMode::Normal, bool sendKeystrokes = false) {
+    bool Open(std::string_view startingText = ""sv) {
         logger::info("Open() VR Keyboard with starting text {}", startingText);
 
         bool wasOpen = isOpen.exchange(true);
@@ -135,7 +104,7 @@ namespace VRKeyboard {
 
         Sleep(overlayWaitMsBeforeActivatingKeyboard);
         
-        keyboardThread = new std::thread(OpenKeyboardThread, startingText, inputSize, inputMode, sendKeystrokes);
+        keyboardThread = new std::thread(OpenKeyboardThread, startingText);
 
         return true;
     };
@@ -152,9 +121,7 @@ namespace VRKeyboard {
                 char buffer[maxCharacters + 1] = "\0"; // + 1 for the terminating character
                 vrContext.VROverlay()->GetKeyboardText(buffer, maxCharacters);
                 text = std::string(buffer);
-                logger::info("Got completed text from keyboard {} / Gonna return!", text);
                 Close();
-                logger::info("Returning!");
                 return text;
             }
         }
